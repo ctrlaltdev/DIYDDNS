@@ -48,5 +48,5 @@ Now that you're set, you have to make that run: `all hail the mighty cron`
 
 You should be able to use something like that:
 ```
-* * * * * /bin/sh /path/to/DIYDDNS.sh >> /dev/null
+* * * * * /bin/bash /path/to/DIYDDNS.sh >> /dev/null
 ```
