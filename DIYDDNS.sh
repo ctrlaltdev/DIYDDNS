@@ -1,9 +1,10 @@
 #!/bin/sh
 
-SOURCE="$BASH_SOURCE[0]"
+SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null && pwd )"
   SOURCE="$(readlink "$SOURCE")"
+  $SOURCE
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null && pwd )"
