@@ -1,6 +1,8 @@
 #!/bin/sh
 
-. ./.env
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+. $DIR/.env
 
 DIGIP=$(dig +short $DNS_NAME)
 WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
