@@ -17,7 +17,7 @@ Edit .env and fill with the email you use on Clouflare and your API KEY.
 ### Get your DNS zone ID: 
 
 ```bash
-$ source .env; \
+$ . .env; \
   curl -X GET "https://api.cloudflare.com/client/v4/zones" \
     -H "X-Auth-Email: $EMAIL" \
     -H "X-Auth-Key: $CLOUDFLARE_API_KEY" \
@@ -30,7 +30,7 @@ Find the right DNS zone, and copy the id to the ZONE_ID var in `.env`.
 ### Get your DNS entry ID:
 
 ```bash
-$ source .env; \
+$ . .env; \
   curl -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
     -H "X-Auth-Email: $EMAIL" \
     -H "X-Auth-Key: $CLOUDFLARE_API_KEY" \

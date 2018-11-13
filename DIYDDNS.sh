@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ./.env
+. ./.env
 
 DIGIP=$(dig +short $DNS_NAME)
 WANIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
