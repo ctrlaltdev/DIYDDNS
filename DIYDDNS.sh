@@ -11,6 +11,6 @@ then
     -H "X-Auth-Email: $EMAIL" \
     -H "X-Auth-Key: $CLOUDFLARE_API_KEY" \
     -H "Content-Type: application/json" \
-    --data '{"type":"A","name":"'"$DNS_NAME"'","content":"'"$WANIP"'","proxied":"false","ttl":"1"}' \
+    --data '{"type": "A","name": "'"$DNS_NAME"'","content": "'"$WANIP"'","proxied": false,"ttl": 1}' \
     --silent
 fi
