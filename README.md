@@ -50,3 +50,9 @@ You should be able to use something like that:
 ```
 * * * * * /bin/bash /path/to/DIYDDNS.sh >> /dev/null
 ```
+## Want a PTR with that?
+
+If you want to create a PTR record too, just pass a flag to the cron:
+```
+* * * * * /bin/bash /path/to/DIYDDNS.sh --ptr >> /dev/null
+```
