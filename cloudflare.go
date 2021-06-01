@@ -3,19 +3,17 @@ package main
 import (
 	"context"
 	"net"
-	"os"
 
 	"github.com/cloudflare/cloudflare-go"
-	_ "github.com/joho/godotenv/autoload"
 )
 
-var (
-	CF_API_KEY   = os.Getenv("CF_API_KEY")
-	CF_API_EMAIL = os.Getenv("CF_API_EMAIL")
-)
+type CFConf struct {
+	API_KEY   string `yaml:"CF_API_KEY"`
+	API_EMAIL string `yaml:"CF_API_EMAIL"`
+}
 
 func GetRecords(domain string, name string, recordType string) ([]cloudflare.DNSRecord, error) {
-	api, err := cloudflare.New(CF_API_KEY, CF_API_EMAIL)
+	api, err := cloudflare.New(CONF.API_KEY, CONF.API_EMAIL)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +41,7 @@ func GetRecords(domain string, name string, recordType string) ([]cloudflare.DNS
 }
 
 func CreateRecord(domain string, name string, recordType string, dst net.IP) error {
-	api, err := cloudflare.New(CF_API_KEY, CF_API_EMAIL)
+	api, err := cloudflare.New(CONF.API_KEY, CONF.API_EMAIL)
 	if err != nil {
 		return err
 	}
@@ -75,7 +73,7 @@ func CreateRecord(domain string, name string, recordType string, dst net.IP) err
 }
 
 func UpdateRecord(record cloudflare.DNSRecord, dst net.IP) error {
-	api, err := cloudflare.New(CF_API_KEY, CF_API_EMAIL)
+	api, err := cloudflare.New(CONF.API_KEY, CONF.API_EMAIL)
 	if err != nil {
 		return err
 	}

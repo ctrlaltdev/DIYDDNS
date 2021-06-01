@@ -1,32 +1,74 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/cloudflare/cloudflare-go"
-	_ "github.com/joho/godotenv/autoload"
+	"gopkg.in/yaml.v3"
 )
 
 var (
 	VERSION = "v2.0.0"
 
-	DOMAIN = os.Getenv("DOMAIN")
-	FQDN   = fmt.Sprintf("devlocal.%s", DOMAIN)
+	shouldInit = flag.Bool("init", false, "Run the initialization process")
+	FQDN       = flag.String("fqdn", "", "The full domain that should be used")
+
+	DOMAIN string
+
+	CONF CFConf
 )
 
-func main() {
+func runInit() {
+	home, err := os.UserHomeDir()
+	CheckErr(err)
+
+	CreateFolderIfNotExists(filepath.Join(home, ".DIYDDNS"), 0700)
+
+	var conf CFConf
+
+	fmt.Print("CloudFlare API Email: ")
+	fmt.Scanln(&conf.API_EMAIL)
+
+	fmt.Print("CloudFlare API Key: ")
+	fmt.Scanln(&conf.API_KEY)
+
+	serial, err := yaml.Marshal(conf)
+	CheckErr(err)
+
+	WriteFile(filepath.Join(home, ".DIYDDNS", "conf.yaml"), string(serial))
+
+	os.Exit(0)
+}
+
+func loadConf() {
+	home, err := os.UserHomeDir()
+	CheckErr(err)
+
+	data := ReadFile(filepath.Join(home, ".DIYDDNS", "conf.yaml"))
+
+	if data == "" {
+		log.Fatalln("No configuration found. Please run DIYDDNS -init first.")
+	}
+
+	err = yaml.Unmarshal([]byte(data), &CONF)
+	CheckErr(err)
+}
+
+func runCheck() {
 	isV4, isV6, ip, err := GetIP()
 	CheckErr(err)
 
 	var records []cloudflare.DNSRecord
 
 	if isV4 {
-		records, err = GetRecords(DOMAIN, FQDN, "A")
+		records, err = GetRecords(DOMAIN, *FQDN, "A")
 	}
 	if isV6 {
-		records, err = GetRecords(DOMAIN, FQDN, "AAAA")
+		records, err = GetRecords(DOMAIN, *FQDN, "AAAA")
 	}
 	CheckErr(err)
 
@@ -45,7 +87,7 @@ func main() {
 			recordType = "AAAA"
 		}
 
-		err = CreateRecord(DOMAIN, FQDN, recordType, ip)
+		err = CreateRecord(DOMAIN, *FQDN, recordType, ip)
 		CheckErr(err)
 
 	} else {
@@ -58,5 +100,20 @@ func main() {
 		CheckErr(err)
 
 	}
+}
 
+func main() {
+	flag.Parse()
+
+	if *shouldInit {
+		runInit()
+	}
+
+	if *FQDN != "" {
+		loadConf()
+		DOMAIN = GetRootDomain(*FQDN)
+		runCheck()
+	} else {
+		fmt.Println("No FQDN passed, you need to define it with the fqdn flag. Run DIYDDN -h to get more info")
+	}
 }
