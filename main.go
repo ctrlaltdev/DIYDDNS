@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"path/filepath"
 
@@ -58,48 +59,49 @@ func loadConf() {
 	CheckErr(err)
 }
 
-func runCheck() {
-	isV4, isV6, ip, err := GetIP()
-	CheckErr(err)
-
+func check(recordType string, ip net.IP) {
 	var records []cloudflare.DNSRecord
 
-	if isV4 {
-		records, err = GetRecords(DOMAIN, *FQDN, "A")
-	}
-	if isV6 {
-		records, err = GetRecords(DOMAIN, *FQDN, "AAAA")
-	}
+	records, err := GetRecords(DOMAIN, *FQDN, recordType)
 	CheckErr(err)
 
 	if len(records) > 1 {
-		log.Fatalf("%d records were found in cloudflare, we only support single record at the moment", len(records))
+		log.Fatalf("%d records were found in cloudflare, we only support single records at the moment", len(records))
 	}
 
 	if len(records) == 0 {
 
-		var recordType string
-
-		if isV4 {
-			recordType = "A"
-		}
-		if isV6 {
-			recordType = "AAAA"
-		}
-
+		log.Printf("Creating record %s %s", recordType, ip.String())
 		err = CreateRecord(DOMAIN, *FQDN, recordType, ip)
 		CheckErr(err)
 
 	} else {
 
-		if ip.String() == records[0].Content {
-			os.Exit(0)
+		if ip != nil {
+
+			if ip.String() == records[0].Content {
+				os.Exit(0)
+			}
+
+			log.Printf("Updating record %s from %s to %s", recordType, records[0].Content, ip.String())
+			err := UpdateRecord(records[0], ip)
+			CheckErr(err)
+
+		} else {
+			log.Printf("Deleting record %s %s", recordType, records[0].Content)
+			err := DeleteRecord(records[0])
+			CheckErr(err)
 		}
 
-		err := UpdateRecord(records[0], ip)
-		CheckErr(err)
-
 	}
+}
+
+func runCheck() {
+	ips, err := GetIPs()
+	CheckErr(err)
+
+	check("A", ips.v4)
+	check("AAAA", ips.v6)
 }
 
 func main() {

@@ -95,3 +95,24 @@ func UpdateRecord(record cloudflare.DNSRecord, dst net.IP) error {
 
 	return nil
 }
+
+func DeleteRecord(record cloudflare.DNSRecord) error {
+	api, err := cloudflare.New(CONF.API_KEY, CONF.API_EMAIL)
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+
+	_, err = api.UserDetails(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = api.DeleteDNSRecord(ctx, record.ZoneID, record.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
