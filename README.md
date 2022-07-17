@@ -16,7 +16,7 @@ brew install diyddns
 ### Easy Shell Script
 
 ```sh
-curl -fSsL https://gist.githubusercontent.com/ctrlaltdev/7407424fe11e094fa85c8246d49bec53/raw/3c2763e7cacd3302598393c1e5b292e8d993465d/getDIYDDNS.sh | sh
+curl -fSsL https://gist.githubusercontent.com/ctrlaltdev/7407424fe11e094fa85c8246d49bec53/raw/ff15eb499e6f4cdc88830fdd1e06e95a4dc783e3/getDIYDDNS.sh | sh
 ```
 
 It will prompt you for your OS and ARCH to download and install the right version - it will require sudo to install the binary to /usr/local/bin
@@ -24,13 +24,17 @@ It will prompt you for your OS and ARCH to download and install the right versio
 ### DIY Shell Script
 
 ```sh
-
 version=v2.1.0
 
-echo -n "What is your OS? [darwin/linux] "
-read os
-echo -n "What is your ARCH? [amd64/arm64/armv7/armv6/armv5] "
-read arch
+os=$1
+arch=$2
+
+if [ -z "$os" ] || [ -z "$arch" ]; then
+  echo -n "What is your OS? [darwin/linux] "
+  read os < /dev/tty
+  echo -n "What is your ARCH? [amd64/arm64/armv7/armv6/armv5] "
+  read arch < /dev/tty
+fi
 
 curl -o DIYDDNS-$os-$arch.tar.gz -sL https://github.com/ctrlaltdev/DIYDDNS/releases/download/$version/DIYDDNS-$os-$arch.tar.gz
 curl -o DIYDDNS-$os-$arch.tar.gz.sha256 -sL https://github.com/ctrlaltdev/DIYDDNS/releases/download/$version/DIYDDNS-$os-$arch.tar.gz.sha256
@@ -45,6 +49,7 @@ sudo mv DIYDDNS /usr/local/bin/
 echo "\nDIYDDNS INSTALLED\n"
 
 DIYDDNS -h
+
 ```
 
 ## INIT
