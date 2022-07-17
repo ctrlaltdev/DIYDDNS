@@ -16,7 +16,7 @@ brew install diyddns
 ### Easy Shell Script
 
 ```sh
-curl -fSsL https://gist.githubusercontent.com/ctrlaltdev/7407424fe11e094fa85c8246d49bec53/raw/ff15eb499e6f4cdc88830fdd1e06e95a4dc783e3/getDIYDDNS.sh | sh
+curl -fSsL https://ln.0x5f.info/getDIYDDNS | sh
 ```
 
 It will prompt you for your OS and ARCH to download and install the right version - it will require sudo to install the binary to /usr/local/bin
